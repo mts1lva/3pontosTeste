@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('votes', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->morphs('votable'); // votable_id, votable_type (Post or Comment)
+            $table->tinyInteger('vote_type'); // 1 for upvote, -1 for downvote
+            $table->timestamps();
+
+            $table->unique(['user_id', 'votable_id', 'votable_type']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('votes');
+    }
+};
